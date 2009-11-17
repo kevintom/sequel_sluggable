@@ -5,14 +5,14 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "sequel_sluggable"
-    gem.summary = %Q{TODO: one-line summary of your gem}
-    gem.description = %Q{Sequel}
+    gem.summary = %Q{Sequel plugin which provides Slug for model.}
+    gem.description = %Q{TODO}
     gem.email = "pavel.kunc@gmail.com"
     gem.homepage = "http://github.com/pk/sequel_sluggable"
-    gem.authors = ["Pavel"]
+    gem.authors = ["Pavel Kunc"]
+    gem.add_dependency "sequel", ">= 3.0.0"
     gem.add_development_dependency "rspec", ">= 1.2.9"
     gem.add_development_dependency "yard", ">= 0"
-    # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
 rescue LoadError
   puts "Jeweler (or a dependency) not available. Install it with: sudo gem install jeweler"

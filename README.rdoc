@@ -15,4 +15,4 @@ Description goes here.
 
 == Copyright
 
-Copyright (c) 2009 Pavel. See LICENSE for details.
+Copyright (c) 2009 Pavel Kunc. See LICENSE for details.
