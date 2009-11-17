@@ -6,7 +6,7 @@ begin
   Jeweler::Tasks.new do |gem|
     gem.name = "sequel_sluggable"
     gem.summary = %Q{Sequel plugin which provides Slug for model.}
-    gem.description = %Q{TODO}
+    gem.description = gem.summary
     gem.email = "pavel.kunc@gmail.com"
     gem.homepage = "http://github.com/pk/sequel_sluggable"
     gem.authors = ["Pavel Kunc"]
