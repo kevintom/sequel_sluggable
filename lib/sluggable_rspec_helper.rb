@@ -1,4 +1,4 @@
-module Sequel::Plugins::Sluggable::RSpecHelper
+module Sequel::Plugins::Sluggable::SluggableRSpecHelper
   def it_should_behave_like_sluggable(klass)
     it "should have slug when created" do
       model = klass.make(klass.slug_source_column => 'Test String')
