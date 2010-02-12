@@ -1,9 +1,13 @@
 require 'rubygems'
 require 'rake'
 
+# Load this library's version information
+require File.expand_path('../lib/version', __FILE__)
+
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
+    gem.version = Sequel::Plugins::Sluggable::VERSION
     gem.name = "sequel_sluggable"
     gem.summary = %Q{Sequel plugin which provides Slug for model.}
     gem.description = gem.summary
