@@ -5,12 +5,12 @@
 
 Gem::Specification.new do |s|
   s.name = %q{sequel_sluggable}
-  s.version = "0.0.1"
+  s.version = "0.0.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Pavel Kunc"]
-  s.date = %q{2010-02-12}
-  s.description = %q{Sequel plugin which provides Slug for model.}
+  s.date = %q{2010-02-14}
+  s.description = %q{Sequel plugin which provides Slug functionality for model.}
   s.email = %q{pavel.kunc@gmail.com}
   s.extra_rdoc_files = [
     "LICENSE",
@@ -28,6 +28,7 @@ Gem::Specification.new do |s|
      "lib/sequel_sluggable.rb",
      "lib/sluggable_rspec_helper.rb",
      "lib/version.rb",
+     "sequel_sluggable.gemspec",
      "spec/sequel_sluggable_spec.rb",
      "spec/spec.opts",
      "spec/spec_helper.rb"
@@ -36,7 +37,7 @@ Gem::Specification.new do |s|
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.5}
-  s.summary = %q{Sequel plugin which provides Slug for model.}
+  s.summary = %q{Sequel plugin which provides Slug functionality for model.}
   s.test_files = [
     "spec/sequel_sluggable_spec.rb",
      "spec/spec_helper.rb"
@@ -47,17 +48,20 @@ Gem::Specification.new do |s|
     s.specification_version = 3
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<sequel>, [">= 3.0.0"])
-      s.add_development_dependency(%q<rspec>, [">= 1.2.9"])
+      s.add_runtime_dependency(%q<sequel>, [">= 0"])
+      s.add_development_dependency(%q<sqlite3-ruby>, [">= 0"])
+      s.add_development_dependency(%q<rspec>, [">= 0"])
       s.add_development_dependency(%q<yard>, [">= 0"])
     else
-      s.add_dependency(%q<sequel>, [">= 3.0.0"])
-      s.add_dependency(%q<rspec>, [">= 1.2.9"])
+      s.add_dependency(%q<sequel>, [">= 0"])
+      s.add_dependency(%q<sqlite3-ruby>, [">= 0"])
+      s.add_dependency(%q<rspec>, [">= 0"])
       s.add_dependency(%q<yard>, [">= 0"])
     end
   else
-    s.add_dependency(%q<sequel>, [">= 3.0.0"])
-    s.add_dependency(%q<rspec>, [">= 1.2.9"])
+    s.add_dependency(%q<sequel>, [">= 0"])
+    s.add_dependency(%q<sqlite3-ruby>, [">= 0"])
+    s.add_dependency(%q<rspec>, [">= 0"])
     s.add_dependency(%q<yard>, [">= 0"])
   end
 end

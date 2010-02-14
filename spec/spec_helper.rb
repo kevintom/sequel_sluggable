@@ -5,6 +5,7 @@ require 'sequel_sluggable'
 require 'spec'
 require 'spec/autorun'
 
+# Create model to test on
 DB = Sequel.sqlite
 DB.create_table :items do
   primary_key :id

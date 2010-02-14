@@ -1,4 +1,3 @@
-require 'rubygems'
 require 'rake'
 
 # Load this library's version information
@@ -9,14 +8,15 @@ begin
   Jeweler::Tasks.new do |gem|
     gem.version = Sequel::Plugins::Sluggable::VERSION
     gem.name = "sequel_sluggable"
-    gem.summary = %Q{Sequel plugin which provides Slug for model.}
+    gem.summary = "Sequel plugin which provides Slug functionality for model."
     gem.description = gem.summary
     gem.email = "pavel.kunc@gmail.com"
     gem.homepage = "http://github.com/pk/sequel_sluggable"
     gem.authors = ["Pavel Kunc"]
-    gem.add_dependency "sequel", ">= 3.0.0"
-    gem.add_development_dependency "rspec", ">= 1.2.9"
-    gem.add_development_dependency "yard", ">= 0"
+    gem.add_dependency "sequel"
+    gem.add_development_dependency "sqlite3-ruby"
+    gem.add_development_dependency "rspec"
+    gem.add_development_dependency "yard"
   end
 rescue LoadError
   puts "Jeweler (or a dependency) not available. Install it with: sudo gem install jeweler"

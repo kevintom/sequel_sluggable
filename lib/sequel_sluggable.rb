@@ -1,37 +1,64 @@
 module Sequel
   module Plugins
-    # The Sluggable plugin creates hook that automatically sets 'slug' field to
-    # the slugged value of the column specified by :source option.
+
+    # The Sluggable plugin creates hook that automatically sets 
+    # 'slug' field to the slugged value of the column specified
+    # by :source option.
     #
-    # You need to have "slug" column in your model.
-    #
+    # You need to have "target" column in your model.
     module Sluggable
-      # Set the source column for the model.
-      # Options:
-      # * :source - The column to get value to be slugged from.
+      DEFAULT_TARGET_COLUMN = :slug
+
+      # Plugin configuration
       def self.configure(model, opts={})
-        model.slug_source_column = opts[:source]
+        model.sluggable_options = opts
       end
 
       module ClassMethods
-        attr_accessor :slug_source_column
+        attr_reader :sluggable_options
 
-        # Finds model by slug or id
+        # Finds model by slug or PK
         #
-        # ==== Returns
-        # PhotoGallery
-        def find_by_id_or_slug(value)
-          filter = value.to_s =~ /^\d+$/ ? {:id => value} : {:slug => value.chomp}
-          self[filter]
+        # @return [Sequel::Model, nil]
+        def find_by_pk_or_slug(value)
+          value.to_s =~ /^\d+$/ ? self[value] : self.find_by_slug(value)
+        end
+
+        # Finds model by Slug column
+        #
+        # @return [Sequel::Model, nil]
+        def find_by_slug(value)
+          self[@sluggable_options[:target] => value.chomp]
+        end
+
+        # Set the plugin options
+        #
+        # Options:
+        # @param [Hash] plugin options
+        # @option source    [Symbol] :Column to get value to be slugged from.       
+        # @option target    [Symbol] :Column to write value of the slug to.
+        # @option sluggator [Proc]   :Algorithm to convert string to slug.
+        def sluggable_options=(options)
+          raise ArgumentError, "You must provide :source column" unless options[:source]
+          if options[:sluggator] &&
+             !options[:sluggator].is_a?(Symbol) &&
+             !options[:sluggator].respond_to?(:call)
+            raise ArgumentError, "If you provide :sluggator it must be Symbol or callable." 
+          end
+          options[:source]    = options[:source].to_sym
+          options[:target]    = options[:target] ? options[:target].to_sym : DEFAULT_TARGET_COLUMN
+          @sluggable_options  = options
         end
       end
 
       module InstanceMethods
 
-        # Sets slug column to the slugged value
+        # Sets a slug column to the slugged value
         def before_save
           super
-          self.slug = self.send(self.class.slug_source_column)
+          target = "#{self.class.sluggable_options[:target]}="
+          source = self.class.sluggable_options[:source]
+          self.send(target, self.send(source))
         end
 
         private
@@ -40,22 +67,21 @@ module Sequel
         #
         # Compute slug for the value
         #
-        # ==== Parameters
-        # v<String>:: String to be slugged
-        #
-        # ==== Returns
-        # String:: Slug
+        # @param [String] String to be slugged
+        # @return [String]
         def slug=(v)
-          super(to_slug(v))
+          slug = if self.class.sluggable_options[:sluggator]
+                   self.class.sluggable_options[:sluggator].call(v, self)
+                 else
+                   to_slug(v)
+                 end
+          super(slug)
         end
 
         # Generate slug from the passed value
         #
-        # ==== Parameters
-        # v<String>:: String to be slugged
-        #
-        # ==== Returns
-        # String:: Slug
+        # @param [String] String to be slugged
+        # @return [String]
         def to_slug(v)
           v.chomp.downcase.gsub(/[^a-z0-9]+/,'-')
         end
