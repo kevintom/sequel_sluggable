@@ -13,7 +13,7 @@ begin
     gem.email = "pavel.kunc@gmail.com"
     gem.homepage = "http://github.com/pk/sequel_sluggable"
     gem.authors = ["Pavel Kunc"]
-    gem.add_dependency "sequel"
+    gem.add_dependency "sequel", ">= 3.0.0"
     gem.add_development_dependency "sqlite3-ruby"
     gem.add_development_dependency "rspec"
     gem.add_development_dependency "yard"
