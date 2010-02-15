@@ -35,9 +35,9 @@ module Sequel
         #
         # Options:
         # @param [Hash] plugin options
-        # @option source    [Symbol] :Column to get value to be slugged from.       
+        # @option source    [Symbol] :Column to get value to be slugged from.
         # @option target    [Symbol] :Column to write value of the slug to.
-        # @option sluggator [Proc]   :Algorithm to convert string to slug.
+        # @option sluggator [Proc, Symbol] :Algorithm to convert string to slug.
         def sluggable_options=(options)
           raise ArgumentError, "You must provide :source column" unless options[:source]
           sluggator = options[:sluggator]
@@ -70,7 +70,9 @@ module Sequel
         # @return [String]
         def slug=(value)
           sluggator = self.class.sluggable_options[:sluggator]
-          slug = sluggator ? sluggator.call(value, self) : to_slug(value)
+          slug = sluggator.call(value, self)   if sluggator.respond_to?(:call)
+          slug ||= self.send(sluggator, value) if sluggator
+          slug ||= to_slug(value)
           super(slug)
         end
 

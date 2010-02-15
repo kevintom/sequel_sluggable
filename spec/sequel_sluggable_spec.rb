@@ -122,6 +122,19 @@ describe "SequelSluggable" do
                   :sluggator => Proc.new {|value, model| value.chomp.downcase.gsub(/[^a-z0-9]+/,'_')}
       Item.create(:name => 'Pavel Kunc').slug.should eql 'pavel_kunc'
     end
+
+    it "should use only :sluggator Symbol if defined" do
+      Item.plugin :sluggable,
+                  :source    => :name,
+                  :target    => :slug,
+                  :sluggator => :my_custom_sluggator
+      Item.class_eval do
+        def my_custom_sluggator(v)
+           v.chomp.upcase.gsub(/[^a-zA-Z0-9]+/,'-')
+        end
+      end
+      Item.create(:name => 'Pavel Kunc').slug.should eql 'PAVEL-KUNC'
+    end
   end
 
 end
