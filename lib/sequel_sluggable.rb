@@ -40,9 +40,8 @@ module Sequel
         # @option sluggator [Proc]   :Algorithm to convert string to slug.
         def sluggable_options=(options)
           raise ArgumentError, "You must provide :source column" unless options[:source]
-          if options[:sluggator] &&
-             !options[:sluggator].is_a?(Symbol) &&
-             !options[:sluggator].respond_to?(:call)
+          sluggator = options[:sluggator]
+          if sluggator && !sluggator.is_a?(Symbol) && !sluggator.respond_to?(:call)
             raise ArgumentError, "If you provide :sluggator it must be Symbol or callable." 
           end
           options[:source]    = options[:source].to_sym
@@ -69,12 +68,9 @@ module Sequel
         #
         # @param [String] String to be slugged
         # @return [String]
-        def slug=(v)
-          slug = if self.class.sluggable_options[:sluggator]
-                   self.class.sluggable_options[:sluggator].call(v, self)
-                 else
-                   to_slug(v)
-                 end
+        def slug=(value)
+          sluggator = self.class.sluggable_options[:sluggator]
+          slug = sluggator ? sluggator.call(value, self) : to_slug(value)
           super(slug)
         end
 
@@ -82,8 +78,8 @@ module Sequel
         #
         # @param [String] String to be slugged
         # @return [String]
-        def to_slug(v)
-          v.chomp.downcase.gsub(/[^a-z0-9]+/,'-')
+        def to_slug(value)
+          value.chomp.downcase.gsub(/[^a-z0-9]+/,'-')
         end
 
       end # InstanceMethods
