@@ -1,8 +1,57 @@
 = sequel_sluggable
 
-Description goes here.
+This plug-in provide functionality to allow Sequel::Model to have a slug.
+Slug is created in the *before_save* hook which is called when you're
+*creating* or *updating* your model.
 
-== Note on Patches/Pull Requests
+To use plug-in you add plug-in to your model:
+
+  class MyModel < Sequel::Model
+    plugin :sluggable, :source => :name
+  end
+
+You can use following options:
+*source*:: Column which value will be used to generate slug.
+*target*:: Column where slug will be written, defaults to *:slug*.
+*sluggator*:: Proc or Symbol to call to create slug.
+
+Options *target* and *sluggator* are optional.
+
+== Algorithm customization
+
+You can customize algorithm of the slug creation in several places.
+If you provide _:sluggator_ Proc or Symbol the sluggator will be called:
+
+  class MyModel < Sequel::Model
+    plugin :sluggable,
+           :source    => :name,
+           :sluggator => Proc.new {|value, model| do_something }
+  end
+
+OR
+
+  class MyModel < Sequel::Model
+    plugin :sluggable,:source => :name, :sluggator => :my_to_slug
+  end
+
+If you don't provide _:sluggator_ sequel_sluggable will try to use
+<b>Model#to_slug(value)</b>. So if you have in your model this method
+it will be used:
+
+  class MyModel < Sequel::Model
+    plugin :sluggable, :source => :name
+
+    def to_slug(value)
+      value.upcase
+    end
+  end
+
+If you don't define <b>Model#to_slug</b> or *:sluggator* sequel_sluggable
+will use it's own default implementation which does following:
+
+  model.source_column.chomp.downcase.gsub(/[^a-z0-9]+/,'-')
+
+= Note on Patches/Pull Requests
  
 * Fork the project.
 * Make your feature addition or bug fix.
