@@ -1,5 +1,15 @@
 = sequel_sluggable
 
+== Install
+
+Add gemcutter.org source if you don't have it:
+  gem source http://gemcutter.org
+
+Install:
+  [sudo] gem install sequel_sluggable
+
+== Usage
+
 This plug-in provide functionality to allow Sequel::Model to have a slug.
 Slug is created in the *before_save* hook which is called when you're
 *creating* or *updating* your model.
