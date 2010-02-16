@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{sequel_sluggable}
-  s.version = "0.0.3"
+  s.version = "0.0.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Pavel Kunc"]
-  s.date = %q{2010-02-15}
+  s.date = %q{2010-02-16}
   s.description = %q{Sequel plugin which provides Slug functionality for model.}
   s.email = %q{pavel.kunc@gmail.com}
   s.extra_rdoc_files = [
