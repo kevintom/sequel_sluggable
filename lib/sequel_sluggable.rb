@@ -31,6 +31,14 @@ module Sequel
           self[@sluggable_options[:target] => value.chomp]
         end
 
+        # Propagate settings to the child classes
+        #
+        # @param [Class] Child class
+        def inherited(klass)
+          super
+          klass.sluggable_options = self.sluggable_options.dup
+        end
+
         # Set the plugin options
         #
         # Options:

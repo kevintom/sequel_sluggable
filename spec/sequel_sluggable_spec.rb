@@ -62,6 +62,24 @@ describe "SequelSluggable" do
       class Item < Sequel::Model; end
       lambda { Item.plugin :sluggable, :source => :name, :sluggator => 'xy' }.should raise_error(ArgumentError, "If you provide :sluggator it must be Symbol or callable.")
     end
+
+    it "should preserve options in sub classes" do
+      class SubItem < Item; end
+      SubItem.sluggable_options.should_not be_nil
+    end
+
+    it "should allow to change options for sub class" do
+      class SubItem < Item; end
+      SubItem.plugin :sluggable, :source => :test
+      SubItem.sluggable_options[:source].should eql :test
+    end
+
+    it "should not mess with parent settings when inherited" do
+      class SubItem < Item; end
+      SubItem.sluggable_options[:source] = :test
+      SubItem.sluggable_options[:source].should eql :test
+      Item.sluggable_options[:source].should eql :name
+    end
   end
 
   describe "::find_by_pk_or_slug" do
