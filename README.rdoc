@@ -27,6 +27,22 @@ You can use following options:
 
 Options *target* and *sluggator* are optional.
 
+<b>Options are inherited when you use inheritance for your models</b>. However
+you can only set options via plugin method.
+
+You can access options for current model via reader <b>Model#sluggable_options</b>
+which is readonly.
+
+== Access/Set slug
+
+You can access slug via your normal Sequel reader. By default that will be 
+<b>Model#slug</b> method. If you customize this via :target option than you have
+<b>Model#:target</b>.
+
+Writer for the slug is generated depending on your :target option. Default will
+be <b>Model#slug=</b> otherwise <b>Model#:target=</b>. You can call setter
+to set the slug before the before_save callback calls it.
+
 == Algorithm customization
 
 You can customize algorithm of the slug creation in several places.
