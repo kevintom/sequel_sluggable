@@ -76,9 +76,31 @@ describe "SequelSluggable" do
 
     it "should not mess with parent settings when inherited" do
       class SubItem < Item; end
-      SubItem.sluggable_options[:source] = :test
+      SubItem.plugin :sluggable, :source => :test
       SubItem.sluggable_options[:source].should eql :test
       Item.sluggable_options[:source].should eql :name
+    end
+
+    it "should not allow changing the options directly" do
+      lambda { Item.sluggable_options[:source] = 'xy' }.should raise_error
+    end
+  end
+
+  describe "#:target= method" do
+    before(:each) do
+      Item.plugin :sluggable,
+                  :source => :name,
+                  :target => :sluggie
+    end
+
+    it "should allow to set slug with Model#:target= method" do
+      i = Item.new(:name => 'Pavel Kunc')
+      i.sluggie = i.name
+      i.sluggie.should eql 'pavel-kunc'
+    end
+
+    it "should work with different Model#:target= method than default" do
+      Item.create(:name => 'Pavel Kunc').sluggie.should eql 'pavel-kunc'
     end
   end
 

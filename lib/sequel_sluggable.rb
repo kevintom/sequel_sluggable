@@ -12,6 +12,24 @@ module Sequel
       # Plugin configuration
       def self.configure(model, opts={})
         model.sluggable_options = opts
+        model.sluggable_options.freeze
+
+        model.class_eval do
+          # Sets the slug to the normalized URL friendly string
+          #
+          # Compute slug for the value
+          #
+          # @param [String] String to be slugged
+          # @return [String]
+          define_method("#{sluggable_options[:target]}=") do |value|
+            sluggator = self.class.sluggable_options[:sluggator]
+            slug = sluggator.call(value, self)   if sluggator.respond_to?(:call)
+            slug ||= self.send(sluggator, value) if sluggator
+            slug ||= to_slug(value)
+            super(slug)
+          end
+        end
+
       end
 
       module ClassMethods
@@ -69,20 +87,6 @@ module Sequel
         end
 
         private
-
-        # Sets the slug to the normalized URL friendly string
-        #
-        # Compute slug for the value
-        #
-        # @param [String] String to be slugged
-        # @return [String]
-        def slug=(value)
-          sluggator = self.class.sluggable_options[:sluggator]
-          slug = sluggator.call(value, self)   if sluggator.respond_to?(:call)
-          slug ||= self.send(sluggator, value) if sluggator
-          slug ||= to_slug(value)
-          super(slug)
-        end
 
         # Generate slug from the passed value
         #

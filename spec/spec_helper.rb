@@ -11,6 +11,7 @@ DB.create_table :items do
   primary_key :id
   String :name
   String :slug
+  String :sluggie
 end
 
 class Item < Sequel::Model; end
