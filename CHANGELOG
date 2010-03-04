@@ -1,0 +1,6 @@
+== 0.0.5, 2010-03-04
+* Allow to generate slug before the before_save + doc update
+* Slug is generated only before_create and when it's not set manually
+* Slug is not by default regenerated before_update
+* New :frozen option (true by default). When true slug is not regenerated
+  during update. When :frozen => false slug is regenerated during update.
