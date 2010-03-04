@@ -88,6 +88,11 @@ will use it's own default implementation which does following:
    bump version in a commit by itself I can ignore when I pull)
 * Send me a pull request. Bonus points for topic branches.
 
+== Contributors
+
+* Pavel Kunc
+* Jakub "Botanicus" Stastny
+
 == Copyright
 
 Copyright (c) 2009 Pavel Kunc. See LICENSE for details.
