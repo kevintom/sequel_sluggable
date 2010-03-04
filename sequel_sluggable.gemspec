@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{sequel_sluggable}
-  s.version = "0.0.4"
+  s.version = "0.0.5"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Pavel Kunc"]
-  s.date = %q{2010-02-16}
+  s.date = %q{2010-03-04}
   s.description = %q{Sequel plugin which provides Slug functionality for model.}
   s.email = %q{pavel.kunc@gmail.com}
   s.extra_rdoc_files = [
@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
   s.files = [
     ".document",
      ".gitignore",
+     "CHANGELOG",
      "LICENSE",
      "README.rdoc",
      "Rakefile",
@@ -33,7 +34,7 @@ Gem::Specification.new do |s|
   s.homepage = %q{http://github.com/pk/sequel_sluggable}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.3.5}
+  s.rubygems_version = %q{1.3.6}
   s.summary = %q{Sequel plugin which provides Slug functionality for model.}
   s.test_files = [
     "spec/sequel_sluggable_spec.rb",
