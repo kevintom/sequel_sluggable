@@ -61,9 +61,10 @@ module Sequel
         #
         # Options:
         # @param [Hash] plugin options
+        # @option frozen    [Boolean]      :Is slug frozen, default true
+        # @option sluggator [Proc, Symbol] :Algorithm to convert string to slug.
         # @option source    [Symbol] :Column to get value to be slugged from.
         # @option target    [Symbol] :Column to write value of the slug to.
-        # @option sluggator [Proc, Symbol] :Algorithm to convert string to slug.
         def sluggable_options=(options)
           raise ArgumentError, "You must provide :source column" unless options[:source]
           sluggator = options[:sluggator]
@@ -72,6 +73,7 @@ module Sequel
           end
           options[:source]    = options[:source].to_sym
           options[:target]    = options[:target] ? options[:target].to_sym : DEFAULT_TARGET_COLUMN
+          options[:frozen]    = options[:frozen].nil? ? true : !!options[:frozen]
           @sluggable_options  = options
         end
       end
@@ -79,11 +81,18 @@ module Sequel
       module InstanceMethods
 
         # Sets a slug column to the slugged value
-        def before_save
+        def before_create
           super
-          target = "#{self.class.sluggable_options[:target]}="
-          source = self.class.sluggable_options[:source]
-          self.send(target, self.send(source))
+          target = self.class.sluggable_options[:target]
+          set_target_column unless self.send(target)
+        end
+        
+        # Sets a slug column to the slugged value
+        def before_update
+          super
+          target = self.class.sluggable_options[:target]
+          frozen = self.class.sluggable_options[:frozen]
+          set_target_column if !self.send(target) || !frozen
         end
 
         private
@@ -94,6 +103,14 @@ module Sequel
         # @return [String]
         def to_slug(value)
           value.chomp.downcase.gsub(/[^a-z0-9]+/,'-')
+        end
+
+        # Sets target column with source column which 
+        # effectively triggers slug generation
+        def set_target_column
+          target = self.class.sluggable_options[:target]
+          source = self.class.sluggable_options[:source]
+          self.send("#{target}=", self.send(source))
         end
 
       end # InstanceMethods

@@ -32,7 +32,8 @@ describe "SequelSluggable" do
       Item.plugin :sluggable,
                   :source    => :name,
                   :target    => :slug,
-                  :sluggator => @sluggator
+                  :sluggator => @sluggator,
+                  :frozen    => false
     end
 
     it "should accept source option" do
@@ -45,6 +46,16 @@ describe "SequelSluggable" do
 
     it "should accept sluggator option" do
       Item.sluggable_options[:sluggator].should eql @sluggator
+    end
+
+    it "should accept frozen option" do
+      Item.sluggable_options[:frozen].should be_false
+    end
+
+    it "should have frozen true by default" do
+      class Item < Sequel::Model; end
+      Item.plugin :sluggable, :source => :name
+      Item.sluggable_options[:frozen].should be_true
     end
 
     it "should require source option" do
@@ -177,4 +188,31 @@ describe "SequelSluggable" do
     end
   end
 
+  describe "slug generation and regeneration" do
+    it "should generate slug when creating model and slug is not set" do
+      Item.create(:name => 'Pavel Kunc').slug.should eql 'pavel-kunc'
+    end
+
+    it "should not regenerate slug when creating model and slug is set" do
+      i = Item.new(:name => 'Pavel Kunc')
+      i.slug = 'Kunc Pavel'
+      i.save
+      i.slug.should eql 'kunc-pavel'
+    end
+
+    it "should regenerate slug when updating model and slug is not frozen" do
+      class Item < Sequel::Model; end
+      Item.plugin :sluggable, :source => :name, :target => :slug, :frozen => false
+      i = Item.create(:name => 'Pavel Kunc')
+      i.update(:name => 'Kunc Pavel')
+      i.slug.should eql 'kunc-pavel'
+    end
+
+    it "should not regenerate slug when updating model" do
+      i = Item.create(:name => 'Pavel Kunc')
+      i.update(:name => 'Kunc Pavel')
+      i.slug.should eql 'pavel-kunc'
+    end
+
+  end
 end

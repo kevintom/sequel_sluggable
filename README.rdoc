@@ -11,8 +11,7 @@ Install:
 == Usage
 
 This plug-in provide functionality to allow Sequel::Model to have a slug.
-Slug is created in the *before_save* hook which is called when you're
-*creating* or *updating* your model.
+Slug is created in ether the *before_create* or *before_update* hooks.
 
 To use plug-in you add plug-in to your model:
 
@@ -21,17 +20,50 @@ To use plug-in you add plug-in to your model:
   end
 
 You can use following options:
+*frozen*:: Should slug be frozen once it's generated? Default true.
+*sluggator*:: Proc or Symbol to call to create slug.
 *source*:: Column which value will be used to generate slug.
 *target*:: Column where slug will be written, defaults to *:slug*.
-*sluggator*:: Proc or Symbol to call to create slug.
 
-Options *target* and *sluggator* are optional.
+Options *frozen*, *sluggator* and *target* are optional.
 
 <b>Options are inherited when you use inheritance for your models</b>. However
 you can only set options via plugin method.
 
 You can access options for current model via reader <b>Model#sluggable_options</b>
 which is readonly.
+
+== When is slug generated?
+
+By default slug is generated *ONLY* when model is created and you 
+<strong>didn't set it</strong>. <strong>When you update model slug 
+is not updated by default</strong> but if you set :frozen => false, 
+slug will be regenerated on update. Some examples:
+
+  class Item < Sequel::Model
+    plugin :source => :name
+    ...
+  end
+  
+  Item.create(:name => 'X')      # Generates slug
+  
+  i = Item.new(:name => 'X')
+  i.slug = 'X Y'                 # Sets slug manualy
+  i.save                         # Slug is not regenerated but the set slug is used
+  i.slug                         # => x-y
+  i.update(:name => 'Y')         # Won't regenerate slug, because slug is frozen by default
+  i.slug                         # => x-y
+  
+  BUT:
+  
+  class Item < Sequel::Model
+    plugin :source => :name, :frozen => false
+    ...
+  end
+  
+  i = Item.create(:name => 'X')  # Generates slug
+  i.update(:name => 'Y')         # Will regenerate slug, because slug is now not frozen
+  i.slug                         # => y
 
 == Access/Set slug
 
@@ -41,7 +73,7 @@ You can access slug via your normal Sequel reader. By default that will be
 
 Writer for the slug is generated depending on your :target option. Default will
 be <b>Model#slug=</b> otherwise <b>Model#:target=</b>. You can call setter
-to set the slug before the before_save callback calls it.
+to set the slug before the creating or updating model.
 
 == Algorithm customization
 
