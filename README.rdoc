@@ -89,7 +89,7 @@ If you provide _:sluggator_ Proc or Symbol the sluggator will be called:
 OR
 
   class MyModel < Sequel::Model
-    plugin :sluggable,:source => :name, :sluggator => :my_to_slug
+    plugin :sluggable, :source => :name, :sluggator => :my_to_slug
   end
 
 If you don't provide _:sluggator_ sequel_sluggable will try to use
@@ -106,8 +106,8 @@ it will be used:
 
 If you don't define <b>Model#to_slug</b> or *:sluggator* sequel_sluggable
 will use it's own default implementation which does following:
-
-  model.source_column.chomp.downcase.gsub(/[^a-z0-9]+/,'-')
+ 
+  'value_of_the_source_column'.chomp.downcase.gsub(/[^a-z0-9]+/,'-')
 
 = Note on Patches/Pull Requests
  
