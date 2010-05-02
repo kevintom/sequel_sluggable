@@ -1,29 +1,9 @@
 require 'rake'
-
-# Load this library's version information
-require File.expand_path('../lib/version', __FILE__)
-
-begin
-  require 'jeweler'
-  Jeweler::Tasks.new do |gem|
-    gem.version = Sequel::Plugins::Sluggable::VERSION
-    gem.name = "sequel_sluggable"
-    gem.summary = "Sequel plugin which provides Slug functionality for model."
-    gem.description = gem.summary
-    gem.email = "pavel.kunc@gmail.com"
-    gem.homepage = "http://github.com/pk/sequel_sluggable"
-    gem.authors = ["Pavel Kunc"]
-    gem.add_dependency "sequel", ">= 3.0.0"
-    gem.add_development_dependency "sqlite3-ruby"
-    gem.add_development_dependency "rspec"
-    gem.add_development_dependency "yard"
-  end
-rescue LoadError
-  puts "Jeweler (or a dependency) not available. Install it with: sudo gem install jeweler"
-end
-
+require 'spec'
 require 'spec/rake/spectask'
+
 Spec::Rake::SpecTask.new(:spec) do |spec|
+  spec.spec_opts << '--options' << 'spec/spec.opts' if File.exists?('spec/spec.opts')
   spec.libs << 'lib' << 'spec'
   spec.spec_files = FileList['spec/**/*_spec.rb']
 end
@@ -34,8 +14,7 @@ Spec::Rake::SpecTask.new(:rcov) do |spec|
   spec.rcov = true
 end
 
-task :spec => :check_dependencies
-
+desc 'Default: run spec examples'
 task :default => :spec
 
 begin
