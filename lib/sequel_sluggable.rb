@@ -8,7 +8,7 @@ module Sequel
     # You need to have "target" column in your model.
     module Sluggable
       DEFAULT_TARGET_COLUMN = :slug
-
+      DEFAULT_SLUG_LENGTH = 5
       # Plugin configuration
       def self.configure(model, opts={})
         model.sluggable_options = opts
@@ -22,10 +22,16 @@ module Sequel
           # @param [String] String to be slugged
           # @return [String]
           define_method("#{sluggable_options[:target]}=") do |value|
-            sluggator = self.class.sluggable_options[:sluggator]
-            slug = sluggator.call(value, self)   if sluggator.respond_to?(:call)
-            slug ||= self.send(sluggator, value) if sluggator
-            slug ||= to_slug(value)
+            if value.nil? and self.class.sluggable_options[:random_slug]
+              slug = random_slug until self.class[sluggable_options[:target] => slug].nil? if self.class.sluggable_options[:unique]
+              slug ||= random_slug
+              end
+            else
+              sluggator = self.class.sluggable_options[:sluggator]
+              slug = sluggator.call(value, self)   if sluggator.respond_to?(:call)
+              slug ||= self.send(sluggator, value) if sluggator
+              slug ||= to_slug(value)
+            end
             super(slug)
           end
         end
@@ -66,14 +72,18 @@ module Sequel
         # @option source    [Symbol] :Column to get value to be slugged from.
         # @option target    [Symbol] :Column to write value of the slug to.
         def sluggable_options=(options)
-          raise ArgumentError, "You must provide :source column" unless options[:source]
           sluggator = options[:sluggator]
           if sluggator && !sluggator.is_a?(Symbol) && !sluggator.respond_to?(:call)
             raise ArgumentError, "If you provide :sluggator it must be Symbol or callable." 
           end
-          options[:source]    = options[:source].to_sym
+          options[:source]    = options[:source].to_sym if options[:source]
           options[:target]    = options[:target] ? options[:target].to_sym : DEFAULT_TARGET_COLUMN
           options[:frozen]    = options[:frozen].nil? ? true : !!options[:frozen]
+          options[:slug_lenth] = options[:slug_length] ? options[:slug_length].to_i : DEFAULT_SLUG_LENGTH
+          options[:random_slug] = options[:source].nil? && options[:sluggator].nil?
+          options[:unique] = options[:unique].class == TrueClass if options[:unique]
+          raise ArgumentError, "You must provide :source column" if !options[:random_slug] and options[:source].nil?
+          options[:before_validate] = options[:before_validate].class == TrueClass if options[:before_validate]
           @sluggable_options  = options
         end
       end
@@ -81,6 +91,14 @@ module Sequel
       module InstanceMethods
 
         # Sets a slug column to the slugged value
+        def before_validation
+          super
+          if self.class.sluggable_options[:before_validate]
+            target = self.class.sluggable_options[:target]
+            set_target_column unless self.send(target)
+          end
+        end
+        
         def before_create
           super
           target = self.class.sluggable_options[:target]
@@ -105,12 +123,16 @@ module Sequel
           value.chomp.downcase.gsub(/[^a-z0-9]+/,'-')
         end
 
+        def random_slug
+          SecureRandom.hex(self.class.sluggable_options[:slug_length])
+        end
+        
         # Sets target column with source column which 
         # effectively triggers slug generation
         def set_target_column
           target = self.class.sluggable_options[:target]
           source = self.class.sluggable_options[:source]
-          self.send("#{target}=", self.send(source))
+          self.send("#{target}=", source ? self.send(source) : nil)
         end
 
       end # InstanceMethods
