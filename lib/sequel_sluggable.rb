@@ -124,6 +124,7 @@ module Sequel
         end
 
         def random_slug
+          # rails or ruby 1.9 dependency. sorry.
           SecureRandom.hex(self.class.sluggable_options[:slug_length])
         end
         
