@@ -23,7 +23,7 @@ module Sequel
           # @return [String]
           define_method("#{sluggable_options[:target]}=") do |value|
             if value.nil? and self.class.sluggable_options[:random_slug]
-              slug = random_slug until self.class[sluggable_options[:target] => slug].nil? if self.class.sluggable_options[:unique]
+              slug = random_slug until self.class[self.class.sluggable_options[:target] => slug].nil? if self.class.sluggable_options[:unique]
               slug ||= random_slug
             else
               sluggator = self.class.sluggable_options[:sluggator]
