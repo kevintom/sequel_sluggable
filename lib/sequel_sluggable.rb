@@ -25,7 +25,6 @@ module Sequel
             if value.nil? and self.class.sluggable_options[:random_slug]
               slug = random_slug until self.class[sluggable_options[:target] => slug].nil? if self.class.sluggable_options[:unique]
               slug ||= random_slug
-              end
             else
               sluggator = self.class.sluggable_options[:sluggator]
               slug = sluggator.call(value, self)   if sluggator.respond_to?(:call)
