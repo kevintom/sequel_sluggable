@@ -78,7 +78,7 @@ module Sequel
           options[:source]    = options[:source].to_sym if options[:source]
           options[:target]    = options[:target] ? options[:target].to_sym : DEFAULT_TARGET_COLUMN
           options[:frozen]    = options[:frozen].nil? ? true : !!options[:frozen]
-          options[:slug_lenth] = options[:slug_length] ? options[:slug_length].to_i : DEFAULT_SLUG_LENGTH
+          options[:slug_length] = options[:slug_length] ? options[:slug_length].to_i : DEFAULT_SLUG_LENGTH
           options[:random_slug] = options[:source].nil? && options[:sluggator].nil?
           options[:unique] = options[:unique].class == TrueClass if options[:unique]
           raise ArgumentError, "You must provide :source column" if !options[:random_slug] and options[:source].nil?
