@@ -25,6 +25,58 @@ describe "SequelSluggable" do
     Item.create(:name => 'Pavel Kunc').slug.should eql 'pavel-kunc'
   end
 
+  describe "lack of option handling" do
+    before(:each) do
+      class Item < Sequel::Model; end
+      Item.plugin :sluggable
+    end
+    
+    it 'should set a option for a random slug' do
+      Item.sluggable_options[:random_slug].should be_true
+    end
+    
+    it 'should have a slug length of 5' do
+      Item.sluggable_options[:slug_length].should eql 5
+    end
+  end
+
+  describe 'unique-ness handling' do
+    before(:each) do
+      class Item < Sequel::Model; end
+      Item.plugin :sluggable, :unique => true
+    end
+    it 'should set a option for a unique slug' do
+      Item.sluggable_options[:unique].should be_true
+    end
+  end
+  
+  describe 'before_validate handling' do
+    before(:each) do
+      class Item < Sequel::Model; end
+      Item.plugin :sluggable, :before_validate => true
+    end
+    
+    it 'should set an option for running in before_validation instead of before_create' do
+      Item.sluggable_options[:before_validate].should be_true
+    end
+  end
+  
+  describe 'unique random slugs created in before_validate' do
+    before(:each) do
+      class Item < Sequel::Model; end
+      Item.plugin :sluggable, :before_validate => true, :unique => true
+    end
+    
+    it 'should have a unique slug' do
+      Item.sluggable_options[:unique].should be_true
+      SecureRandom = mock("fake random generator")
+      SecureRandom.stub(:hex).and_return(rand(10))
+      item1 = Item.create(:name => 'Pavel Kunc')
+      item2 = Item.create(:name => 'Pavel Kunc')
+      item1.slug.should_not eql item2.slug
+    end
+  end
+
   describe "options handling" do
     before(:each) do
       @sluggator = Proc.new {|value, model| value.chomp.downcase}
@@ -190,14 +242,14 @@ describe "SequelSluggable" do
 
   describe "slug generation and regeneration" do
     it "should generate slug when creating model and slug is not set" do
-      Item.create(:name => 'Pavel Kunc').slug.should eql 'pavel-kunc'
+      Item.create(:name => 'Pavel Kunc').slug.should eql 'pavel_kunc'
     end
 
     it "should not regenerate slug when creating model and slug is set" do
       i = Item.new(:name => 'Pavel Kunc')
       i.slug = 'Kunc Pavel'
       i.save
-      i.slug.should eql 'kunc-pavel'
+      i.slug.should eql 'kunc_pavel'
     end
 
     it "should regenerate slug when updating model and slug is not frozen" do
@@ -205,13 +257,13 @@ describe "SequelSluggable" do
       Item.plugin :sluggable, :source => :name, :target => :slug, :frozen => false
       i = Item.create(:name => 'Pavel Kunc')
       i.update(:name => 'Kunc Pavel')
-      i.slug.should eql 'kunc-pavel'
+      i.slug.should eql 'kunc_pavel'
     end
 
     it "should not regenerate slug when updating model" do
       i = Item.create(:name => 'Pavel Kunc')
       i.update(:name => 'Kunc Pavel')
-      i.slug.should eql 'pavel-kunc'
+      i.slug.should eql 'pavel_kunc'
     end
 
   end

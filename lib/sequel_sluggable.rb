@@ -22,10 +22,11 @@ module Sequel
           # @param [String] String to be slugged
           # @return [String]
           define_method("#{sluggable_options[:target]}=") do |value|
+            p "values is #{value}"
             if value.nil? and self.class.sluggable_options[:random_slug]
               slug = random_slug
               if self.class.sluggable_options[:unique]
-                while self.class[self.class.sluggable_options[:target] => slug]
+                while !self.class.slug_uniqueness(slug)
                   slug = random_slug
                 end
               end
@@ -56,6 +57,13 @@ module Sequel
         # @return [Sequel::Model, nil]
         def find_by_slug(value)
           self[@sluggable_options[:target] => value.chomp]
+        end
+
+        def slug_uniqueness(slug)
+          self[self.sluggable_options[:target] => slug].nil?
+          #wtf = DB[self.table_name].where(self.sluggable_options[:target] => slug).count == 0
+          #p "is it unique #{wtf}"
+          #wtf
         end
 
         # Propagate settings to the child classes
