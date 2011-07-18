@@ -58,9 +58,9 @@ describe "SequelSluggable" do
       Item.sluggable_options[:frozen].should be_true
     end
 
-    it "should require source option" do
+    it "should require source option if not random" do
       class Item < Sequel::Model; end
-      lambda { Item.plugin :sluggable }.should raise_error(ArgumentError, "You must provide :source column")
+      lambda { Item.plugin :sluggable, :sluggator => :does_not_exist }.should raise_error(ArgumentError, "You must provide :source column")
     end
 
     it "should default target option to :slug when not provided" do
