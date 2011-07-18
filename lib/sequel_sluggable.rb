@@ -22,7 +22,6 @@ module Sequel
           # @param [String] String to be slugged
           # @return [String]
           define_method("#{sluggable_options[:target]}=") do |value|
-            p "values is #{value}"
             if value.nil? and self.class.sluggable_options[:random_slug]
               slug = random_slug
               if self.class.sluggable_options[:unique]
@@ -61,9 +60,6 @@ module Sequel
 
         def slug_uniqueness(slug)
           self[self.sluggable_options[:target] => slug].nil?
-          #wtf = DB[self.table_name].where(self.sluggable_options[:target] => slug).count == 0
-          #p "is it unique #{wtf}"
-          #wtf
         end
 
         # Propagate settings to the child classes
@@ -135,10 +131,23 @@ module Sequel
         end
 
         def random_slug
+          begin
+            sr_class = Module.const_get("SecureRandom")
+            sr_defined = sr_class.is_a?(Class)
+          rescue NameError
+            sr_defined = false
+          end
           # rails or ruby 1.9 dependency. sorry.
-          SecureRandom.hex(self.class.sluggable_options[:slug_length])
+          if sr_defined
+            SecureRandom.hex(self.class.sluggable_options[:slug_length])
+          else
+            require 'digest/sha1'
+            sha1 = Digest::SHA1.hexdigest(Time.now.to_s)
+            length = (self.class.sluggable_options[:slug_length] * 2) - 1
+            sha1[0..length]
+          end
         end
-        
+
         # Sets target column with source column which 
         # effectively triggers slug generation
         def set_target_column
