@@ -69,8 +69,6 @@ describe "SequelSluggable" do
     
     it 'should have a unique slug' do
       Item.sluggable_options[:unique].should be_true
-      SecureRandom = mock("fake random generator")
-      SecureRandom.stub(:hex).and_return(rand(10))
       item1 = Item.create(:name => 'Pavel Kunc')
       item2 = Item.create(:name => 'Pavel Kunc')
       item1.slug.should_not eql item2.slug
