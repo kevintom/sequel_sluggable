@@ -58,10 +58,11 @@ module Sequel
           self[@sluggable_options[:target] => value.chomp]
         end
 
-        def slug_uniqueness(slug)
-          self[self.sluggable_options[:target] => slug].nil?
+        unless self.respond_to?(:slug_uniqueness)
+          def slug_uniqueness(slug)
+            self[self.sluggable_options[:target] => slug].nil?
+          end
         end
-
         # Propagate settings to the child classes
         #
         # @param [Class] Child class

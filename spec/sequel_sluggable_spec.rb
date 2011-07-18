@@ -50,6 +50,20 @@ describe "SequelSluggable" do
     end
   end
   
+  describe 'not clobbering pre-defined slug_uniqueness' do
+    before(:each) do
+      class Item2 < Sequel::Model
+        def self.slug_uniqueness(slug)
+          return :test
+        end
+      end
+      Item2.plugin :sluggable, :unique => true
+    end
+    it 'should not over-write existing method' do
+      Item2.slug_uniqueness("garbage").should eql :test
+    end
+  end
+  
   describe 'before_validate handling' do
     before(:each) do
       class Item < Sequel::Model; end
