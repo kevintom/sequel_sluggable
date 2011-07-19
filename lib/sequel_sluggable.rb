@@ -14,7 +14,14 @@ module Sequel
         model.sluggable_options = opts
         model.sluggable_options.freeze
 
+
         model.class_eval do
+          # this strikes me as dirty but seems to be the only way to get it to occure at "the right time"
+          unless self.respond_to?(:slug_uniqueness)
+            def self.slug_uniqueness(slug)
+              self[self.sluggable_options[:target] => slug].nil?
+            end
+          end
           # Sets the slug to the normalized URL friendly string
           #
           # Compute slug for the value
@@ -58,11 +65,6 @@ module Sequel
           self[@sluggable_options[:target] => value.chomp]
         end
 
-        unless self.respond_to?(:slug_uniqueness)
-          def slug_uniqueness(slug)
-            self[self.sluggable_options[:target] => slug].nil?
-          end
-        end
         # Propagate settings to the child classes
         #
         # @param [Class] Child class
