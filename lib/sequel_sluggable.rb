@@ -134,21 +134,21 @@ module Sequel
         end
 
         def random_slug
-          begin
-            sr_class = Module.const_get("SecureRandom")
-            sr_defined = sr_class.is_a?(Class)
-          rescue NameError
-            sr_defined = false
-          end
+          # begin
+          #   sr_class = Module.const_get("SecureRandom")
+          #   sr_defined = sr_class.is_a?(Class)
+          # rescue NameError
+          #   sr_defined = false
+          # end
           # rails or ruby 1.9 dependency. sorry.
-          if sr_defined
+          # if sr_defined
             SecureRandom.hex(self.class.sluggable_options[:slug_length])
-          else
-            require 'digest/sha1'
-            sha1 = Digest::SHA1.hexdigest(Time.now.to_s)
-            length = (self.class.sluggable_options[:slug_length] * 2) - 1
-            sha1[0..length]
-          end
+          # else
+          #   require 'digest/sha1'
+          #   sha1 = Digest::SHA1.hexdigest(Time.now.to_s)
+          #   length = (self.class.sluggable_options[:slug_length] * 2) - 1
+          #   sha1[0..length]
+          # end
         end
 
         # Sets target column with source column which 
